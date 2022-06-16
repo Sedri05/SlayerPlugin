@@ -1,7 +1,6 @@
 package me.sedri.slayers.Data;
 
 import me.sedri.slayers.Slayers;
-import me.sedri.slayers.Slayers;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

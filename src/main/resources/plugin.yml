@@ -3,3 +3,8 @@ version: '${version}'
 main: me.sedri.slayers.Slayers
 api-version: 1.18
 authors: [ Sedri ]
+commands:
+  slayer:
+    description: Main Slayer Command
+    aliases:
+      - slayers

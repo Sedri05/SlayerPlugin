@@ -1,0 +1,79 @@
+zombie_slayer:
+  #Name of the main menu item
+  name: '&4Zombie Slayer'
+  #Material of the main menu item
+  material: diamond_sword
+  #Lore of the main menu item
+  description:
+    - '&cA beginners slayer'
+    - '&aSecond lind of Lore'
+  #The tiers of this slayer
+  tiers:
+    #first tier. You can have as many as you want. name of the tier isn't important
+    tier1:
+      #The permission that is needed to start the slayer. Can be left empty
+      required-perm: "sedri.zombie.tier.1"
+      #The amount if coins it wil take to start the slayer. Set to 0 to disable
+      required-coins: 10000
+      #Name of the tier item
+      name: '&cZombie Slayer Tier I'
+      #Material of the tier item
+      material: zombie_head
+      #The amount of xp you need before a boss spawns
+      required-xp: 10
+      #The amound of xp you get when killing the boss
+      reward-xp: 15
+      #Lore of the tier item
+      description:
+        - '&7Difficulty: &eEasy'
+        - ""
+        - "&7Kill zombies to spawn the"
+        - "&cZombie Boss. &7This boss is just a placeholder"
+        - ""
+        - "&eClick to start"
+      #The boss mob
+      boss: zombie
+    tier2:
+      required-perm: "sedri.zombie.tier.2"
+      required-coins: 10000
+      name: '&cZombie Slayer Tier II'
+      material: zombie_head
+      required-xp: 15
+      reward-xp: 20
+      description:
+        - '&7Difficulty: &6Medium'
+        - ""
+        - "&7Kill zombies to spawn the"
+        - "&cZombie Boss. &7This boss is just a placeholder"
+        - ""
+        - "&eClick to start"
+      boss: zombie
+  #https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html
+  #<mob>:<xp>
+  #XP is how much xp you get when killing that mob and is related to required-xp
+  #MM support will be added when we update to latest
+  mob-list:
+    - "zombie:1"
+    - "ZOMBIE_VILLAGER:2"
+  #Levels
+  levels:
+    #The key indicated the amound of xp you need to advance to the next level
+    100:
+      #This is just item lore and does not actually give rewards
+      rewards-lore:
+        - "&764 Rotten Flesh"
+        - "&b1 Diamond Block"
+        - "&6Access to /craft"
+      #These commands get run (from console) when the player levels up
+      #Use %player% as the player
+      commands:
+        - "give %player% rotten_flesh 64"
+        - "give %player% diamond_block 1"
+      #These permissions get given when a player levels up
+      permissions:
+        - "essentials.workbench"
+    250:
+      rewards-lore:
+        - "second rewards lore"
+      commands: []
+      permissions: []

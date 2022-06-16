@@ -4,7 +4,9 @@ import me.sedri.slayers.Commands.SlayerCommand;
 import me.sedri.slayers.Data.SlayerConfig;
 import me.sedri.slayers.Data.SlayerData;
 import me.sedri.slayers.Data.SlayerLevel;
+import me.sedri.slayers.Data.SlayerXpStorage;
 import me.sedri.slayers.Gui.MainSlayerGui;
+import me.sedri.slayers.Listeners.PlayerInteractListener;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
@@ -17,9 +19,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.util.*;
 
 public final class Slayers extends JavaPlugin {
@@ -27,7 +31,6 @@ public final class Slayers extends JavaPlugin {
     private static Economy econ = null;
     public HashMap<Player, SlayerData> activeSlayer = new HashMap<>();
     public LinkedHashMap<String, SlayerData> allSlayers = new LinkedHashMap<>();
-    public HashMap<Player, ArrayList<String>> distance = new HashMap<>();
     public ItemStack[] mainslayermenu = new ItemStack[54];
     public ArrayList<ItemStack> slayermenu;
     public HashMap<String, ArrayList<Integer>> LevelList = new HashMap<>();
@@ -45,13 +48,50 @@ public final class Slayers extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        plugin = this;
+        if (!setupEconomy() ) {
+            getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        //Player p = getServer().getPlayer(UUID.fromString("0b0172c6-e10f-49dc-9f27-c9cf12e9ed7b"));
+        try {
+            SlayerXpStorage.loadPlayerSlayerXp();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        readyEvents();
+        readyCommands();
+        //getConfig().options().copyDefaults();
+        //saveDefaultConfig();
+        saveResource("slayers.yml", false);
+        if (SlayerConfig.getFile().length() == 0){
+            saveResource("slayers.yml", true);
+        }
+        SlayerConfig.setup();
+        readySlayers();
 
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        try {
+            SlayerXpStorage.savePlayerSlayerXp();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void readyEvents(){
+        PluginManager m = getServer().getPluginManager();
+        m.registerEvents(new PlayerInteractListener(), this);
+    }
+
+    private void readyCommands(){
+
+        Objects.requireNonNull(getCommand("slayer")).setExecutor(new SlayerCommand());
     }
 
     private boolean setupEconomy() {
