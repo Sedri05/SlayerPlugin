@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class SlayerXp {
 
-    private Slayers plugin = Slayers.getPlugin();
+    private final Slayers plugin = Slayers.getPlugin();
     private float xp = 0;
     private float level = 0;
     private final String slayer;

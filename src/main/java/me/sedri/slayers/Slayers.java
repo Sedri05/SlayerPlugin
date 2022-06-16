@@ -1,10 +1,8 @@
 package me.sedri.slayers;
 
 import me.sedri.slayers.Commands.SlayerCommand;
-import me.sedri.slayers.Data.SlayerConfig;
-import me.sedri.slayers.Data.SlayerData;
-import me.sedri.slayers.Data.SlayerLevel;
-import me.sedri.slayers.Data.SlayerXpStorage;
+import me.sedri.slayers.Commands.test;
+import me.sedri.slayers.Data.*;
 import me.sedri.slayers.Gui.MainSlayerGui;
 import me.sedri.slayers.Listeners.PlayerInteractListener;
 import net.luckperms.api.LuckPerms;
@@ -24,6 +22,9 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 public final class Slayers extends JavaPlugin {
@@ -37,6 +38,7 @@ public final class Slayers extends JavaPlugin {
     public HashMap<String, ArrayList<SlayerLevel>> Levels = new HashMap<>();
     public LinkedHashMap<Integer, String> slayermenuindex = new LinkedHashMap<>();
     public LinkedHashMap<String, ItemStack> slayersubmenu = new LinkedHashMap<>();
+    public static List<String> slayerkeys = new ArrayList<>();
 
     public static Slayers getPlugin(){
         return plugin;
@@ -70,6 +72,12 @@ public final class Slayers extends JavaPlugin {
         }*/
         SlayerConfig.setup();
         readySlayers();
+        try {
+            initDatabase();
+            System.out.println("oi");
+        } catch (SQLException e){
+            getLogger().severe("Failed To load SQL database");
+        }
 
     }
 
@@ -92,6 +100,7 @@ public final class Slayers extends JavaPlugin {
     private void readyCommands(){
 
         Objects.requireNonNull(getCommand("slayer")).setExecutor(new SlayerCommand());
+        Objects.requireNonNull(getCommand("sql")).setExecutor(new test());
     }
 
     private boolean setupEconomy() {
@@ -126,6 +135,19 @@ public final class Slayers extends JavaPlugin {
         }
     }
 
+    private void initDatabase() throws SQLException {
+        System.out.println("got here at least");
+        Connection conn;
+        conn = SlayerSQL.newConnection();
+        if (conn == null) return;
+        for (String key: slayerkeys) {
+            try (Statement statement = conn.createStatement()) {
+                String sql = "CREATE TABLE IF NOT EXISTS "+key+"(UUID TEXT, SLAYER TEXT, XP INT, LEVEL INT)";
+                statement.execute(sql);
+            }
+        }
+        conn.close();
+    }
 
     public void readySlayers(){
         slayermenu = new ArrayList<>();
@@ -140,7 +162,7 @@ public final class Slayers extends JavaPlugin {
         mainslayermenu[mainslayermenu.length-5] = MainSlayerGui.createGuiItem(Material.BARRIER, "&cClose");
         int i = 10;
         for (String key: keys){
-            SlayerCommand.keylist.add(key);
+            slayerkeys.add(key);
             ConfigurationSection slayer = SlayerConfig.get().getConfigurationSection(key);
             if (slayer == null) continue;
             Material mat = Material.ZOMBIE_HEAD;

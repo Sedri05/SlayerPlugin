@@ -11,3 +11,5 @@ commands:
     description: Main Slayer Command
     aliases:
       - slayers
+  sql:
+    description: e

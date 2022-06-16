@@ -3,6 +3,7 @@ package me.sedri.slayers.Commands;
 import me.sedri.slayers.Data.SlayerXp;
 import me.sedri.slayers.Data.SlayerXpStorage;
 import me.sedri.slayers.Gui.MainSlayerGui;
+import me.sedri.slayers.Slayers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,8 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SlayerCommand implements CommandExecutor, TabCompleter {
-
-    public static List<String> keylist = new ArrayList<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -98,7 +97,7 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
                 if (args.length == 2) {
                     return Arrays.asList("add", "remove");
                 } else if (args.length == 3 && (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove"))) {
-                    return keylist;
+                    return Slayers.slayerkeys;
                 } else if (args.length == 4) {
                     return List.of("<int>");
                 } else if (args.length == 5) {
