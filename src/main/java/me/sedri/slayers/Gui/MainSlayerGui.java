@@ -178,6 +178,7 @@ public class MainSlayerGui implements Listener {
                         SlayerData data = new SlayerData(plugin.allSlayers.get(s), p);
                         if (data.canStart(p)) {
                             plugin.activeSlayer.put(p, data);
+                            data.initBossBar(p);
                             p.closeInventory();
                             String name = data.getName();
                             String str = "&cYou have started a " + name;

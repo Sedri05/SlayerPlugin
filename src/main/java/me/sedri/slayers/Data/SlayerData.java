@@ -87,7 +87,6 @@ public class SlayerData {
         this.money = data.getMoney();
         this.bossBar = data.getBossBar();
         this.slayername = data.getSlayername();
-        initBossBar(p);
     }
 
     public String getTier() {

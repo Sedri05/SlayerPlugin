@@ -65,9 +65,9 @@ public final class Slayers extends JavaPlugin {
         //getConfig().options().copyDefaults();
         //saveDefaultConfig();
         saveResource("slayers.yml", false);
-        if (SlayerConfig.getFile().length() == 0){
+        /*if (SlayerConfig.getFile().length() == 0){
             saveResource("slayers.yml", true);
-        }
+        }*/
         SlayerConfig.setup();
         readySlayers();
 
