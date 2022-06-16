@@ -1,0 +1,5 @@
+name: Slayers
+version: '${version}'
+main: me.sedri.slayers.Slayers
+api-version: 1.18
+authors: [ Sedri ]
