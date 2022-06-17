@@ -1,19 +1,19 @@
 package me.sedri.slayers.Commands;
 
+import me.sedri.slayers.Data.SlayerConfig;
 import me.sedri.slayers.Data.SlayerSQL;
 import me.sedri.slayers.Data.SlayerXp;
 import me.sedri.slayers.Gui.MainSlayerGui;
 import me.sedri.slayers.Slayers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,6 +79,17 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
                 }
                 SlayerSQL.saveSlayerXp(xp);
             }
+            case "reload" -> {
+                if (!p.hasPermission("sedri.reload")) return false;
+                SlayerConfig.reload();
+                Slayers.getPlugin().readySlayers();
+                try {
+                    SlayerSQL.conn.close();
+                    SlayerSQL.initDatabase();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         return false;
     }
@@ -98,7 +109,7 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
         if (sender.hasPermission("sedri.editslayer")){
             if (args[0].equalsIgnoreCase("level") || args[0].equalsIgnoreCase("xp")) {
                 if (args.length == 2) {
-                    return Arrays.asList("add", "remove");
+                    return Arrays.asList("add", "remove", "reload");
                 } else if (args.length == 3 && (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove"))) {
                     return Slayers.slayerkeys;
                 } else if (args.length == 4) {

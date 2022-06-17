@@ -1,7 +1,6 @@
 package me.sedri.slayers;
 
 import me.sedri.slayers.Commands.SlayerCommand;
-import me.sedri.slayers.Commands.test;
 import me.sedri.slayers.Data.SlayerConfig;
 import me.sedri.slayers.Data.SlayerData;
 import me.sedri.slayers.Data.SlayerLevel;
@@ -31,13 +30,13 @@ public final class Slayers extends JavaPlugin {
     private static Slayers plugin;
     private static Economy econ = null;
     public HashMap<Player, SlayerData> activeSlayer = new HashMap<>();
-    public LinkedHashMap<String, SlayerData> allSlayers = new LinkedHashMap<>();
-    public ItemStack[] mainslayermenu = new ItemStack[54];
+    public LinkedHashMap<String, SlayerData> allSlayers;
+    public ItemStack[] mainslayermenu;
     public ArrayList<ItemStack> slayermenu;
-    public HashMap<String, ArrayList<Integer>> LevelList = new HashMap<>();
-    public HashMap<String, ArrayList<SlayerLevel>> Levels = new HashMap<>();
-    public LinkedHashMap<Integer, String> slayermenuindex = new LinkedHashMap<>();
-    public LinkedHashMap<String, ItemStack> slayersubmenu = new LinkedHashMap<>();
+    public HashMap<String, ArrayList<Integer>> LevelList;
+    public HashMap<String, ArrayList<SlayerLevel>> Levels;
+    public LinkedHashMap<Integer, String> slayermenuindex;
+    public LinkedHashMap<String, ItemStack> slayersubmenu;
     public static List<String> slayerkeys = new ArrayList<>();
 
     public static Slayers getPlugin(){
@@ -93,9 +92,7 @@ public final class Slayers extends JavaPlugin {
     }
 
     private void readyCommands(){
-
         Objects.requireNonNull(getCommand("slayer")).setExecutor(new SlayerCommand());
-        Objects.requireNonNull(getCommand("sql")).setExecutor(new test());
     }
 
     private boolean setupEconomy() {
@@ -136,6 +133,9 @@ public final class Slayers extends JavaPlugin {
         slayermenuindex = new LinkedHashMap<>();
         slayersubmenu = new LinkedHashMap<>();
         allSlayers = new LinkedHashMap<>();
+        slayerkeys = new ArrayList<>();
+        Levels = new HashMap<>();
+        LevelList = new LinkedHashMap<>();
         ItemStack fillitem = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         fillitem.getItemMeta().setDisplayName("");
         Arrays.fill(mainslayermenu, fillitem);

@@ -18,7 +18,6 @@ public class SlayerSQL {
 
     public static void initDatabase() throws SQLException {
         newConnection();
-        System.out.println("got here at least");
         for (String key: Slayers.slayerkeys) {
             try (Statement statement = conn.createStatement()) {
                 String sql = "CREATE TABLE IF NOT EXISTS "+key+"(UUID TEXT, SLAYER TEXT, XP INT, LEVEL INT)";
