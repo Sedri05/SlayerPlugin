@@ -16,18 +16,9 @@ public class test implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player p)) return false;
         if (args[0].equals("get")) {
-            try {
-                System.out.println(SlayerSQL.getUser(p.getUniqueId(), "zombie_slayer"));
-            } catch (SQLException e) {
-                p.sendMessage("Something went wrong");
-                e.printStackTrace();
-            }
+            System.out.println(SlayerSQL.getUser(p.getUniqueId(), "zombie_slayer"));
         } else if (args[0].equals("set")){
-            try {
-                SlayerSQL.saveSlayerXp(new SlayerXp(p.getUniqueId(), "zombie_slayer"));
-            } catch (SQLException e){
-                e.printStackTrace();
-            }
+            SlayerSQL.saveSlayerXp(new SlayerXp(p.getUniqueId(), "zombie_slayer"));
         }
         return false;
     }

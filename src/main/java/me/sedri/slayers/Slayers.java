@@ -2,7 +2,10 @@ package me.sedri.slayers;
 
 import me.sedri.slayers.Commands.SlayerCommand;
 import me.sedri.slayers.Commands.test;
-import me.sedri.slayers.Data.*;
+import me.sedri.slayers.Data.SlayerConfig;
+import me.sedri.slayers.Data.SlayerData;
+import me.sedri.slayers.Data.SlayerLevel;
+import me.sedri.slayers.Data.SlayerSQL;
 import me.sedri.slayers.Gui.MainSlayerGui;
 import me.sedri.slayers.Listeners.PlayerInteractListener;
 import net.luckperms.api.LuckPerms;
@@ -21,10 +24,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 public final class Slayers extends JavaPlugin {
@@ -57,11 +57,6 @@ public final class Slayers extends JavaPlugin {
             return;
         }
         //Player p = getServer().getPlayer(UUID.fromString("0b0172c6-e10f-49dc-9f27-c9cf12e9ed7b"));
-        try {
-            SlayerXpStorage.loadPlayerSlayerXp();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         readyEvents();
         readyCommands();
         //getConfig().options().copyDefaults();
@@ -73,10 +68,10 @@ public final class Slayers extends JavaPlugin {
         SlayerConfig.setup();
         readySlayers();
         try {
-            initDatabase();
-            System.out.println("oi");
+            SlayerSQL.initDatabase();
         } catch (SQLException e){
             getLogger().severe("Failed To load SQL database");
+            getServer().getPluginManager().disablePlugin(this);
         }
 
     }
@@ -85,8 +80,8 @@ public final class Slayers extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         try {
-            SlayerXpStorage.savePlayerSlayerXp();
-        } catch (Exception e) {
+            SlayerSQL.conn.close();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -133,20 +128,6 @@ public final class Slayers extends JavaPlugin {
             user.data().remove(Node.builder(permission).build());
             luckPerms.getUserManager().saveUser(user);
         }
-    }
-
-    private void initDatabase() throws SQLException {
-        System.out.println("got here at least");
-        Connection conn;
-        conn = SlayerSQL.newConnection();
-        if (conn == null) return;
-        for (String key: slayerkeys) {
-            try (Statement statement = conn.createStatement()) {
-                String sql = "CREATE TABLE IF NOT EXISTS "+key+"(UUID TEXT, SLAYER TEXT, XP INT, LEVEL INT)";
-                statement.execute(sql);
-            }
-        }
-        conn.close();
     }
 
     public void readySlayers(){

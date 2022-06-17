@@ -2,8 +2,8 @@ package me.sedri.slayers.Gui;
 
 import me.sedri.slayers.Data.SlayerData;
 import me.sedri.slayers.Data.SlayerLevel;
+import me.sedri.slayers.Data.SlayerSQL;
 import me.sedri.slayers.Data.SlayerXp;
-import me.sedri.slayers.Data.SlayerXpStorage;
 import me.sedri.slayers.Slayers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -101,7 +100,8 @@ public class MainSlayerGui implements Listener {
         for (; i < 17; i++) {
             inv.setItem(i, createGuiItem(Material.COAL, "&4No Boss", "&7This boss is", "&7not available."));
         }
-        SlayerXp player = SlayerXpStorage.createPlayer(p, menu);
+        SlayerXp player = SlayerSQL.getUser(p, menu);
+        if (player == null) return;
         int plvl = (int) player.getLevel();
         int pxp = (int) player.getXp();
         int maxlvl = 0;

@@ -1,7 +1,7 @@
 package me.sedri.slayers.Commands;
 
+import me.sedri.slayers.Data.SlayerSQL;
 import me.sedri.slayers.Data.SlayerXp;
-import me.sedri.slayers.Data.SlayerXpStorage;
 import me.sedri.slayers.Gui.MainSlayerGui;
 import me.sedri.slayers.Slayers;
 import org.bukkit.Bukkit;
@@ -44,7 +44,8 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
                         p = p2;
                     }
                 }
-                SlayerXp xp = SlayerXpStorage.createPlayer(p, args[2]);
+                SlayerXp xp = SlayerSQL.getUser(p.getUniqueId(), args[2]);
+                if (xp == null) return false;
                 for (int i = 0; i < Integer.parseInt(args[3]); i++) {
                     if (args[1].equalsIgnoreCase("add")) {
                         xp.incrementLevel();
@@ -52,9 +53,9 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
                         xp.decrementLevel();
                     } else {
                         sender.sendMessage(ChatColor.RED + "Invalid command");
-                        return false;
                     }
                 }
+                SlayerSQL.saveSlayerXp(xp);
             }
             case "xp" -> {
                 if (!(args.length >= 4)){
@@ -67,7 +68,8 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
                         p = p2;
                     }
                 }
-                SlayerXp xp = SlayerXpStorage.createPlayer(p, args[2]);
+                SlayerXp xp = SlayerSQL.getUser(p.getUniqueId(), args[2]);
+                if (xp == null) return false;
                 if (args[1].equalsIgnoreCase("add")) {
                     xp.addXp(Integer.parseInt(args[3]));
                 } else if (args[1].equalsIgnoreCase("remove")) {
@@ -75,6 +77,7 @@ public class SlayerCommand implements CommandExecutor, TabCompleter {
                 } else {
                     sender.sendMessage(ChatColor.RED + "Invalid command");
                 }
+                SlayerSQL.saveSlayerXp(xp);
             }
         }
         return false;

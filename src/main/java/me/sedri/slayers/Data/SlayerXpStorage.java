@@ -14,7 +14,7 @@ import java.util.UUID;
 public class SlayerXpStorage {
     public static HashMap<String, ArrayList<SlayerXp>> SlayerList = new HashMap<>();
 
-    public static SlayerXp createPlayer(Player p, String slayer){
+    /*public static SlayerXp createPlayer(Player p, String slayer){
         createSlayerType(slayer);
         ArrayList<SlayerXp> playerxp = SlayerList.get(slayer);
         for (SlayerXp xp: playerxp){
@@ -89,5 +89,5 @@ public class SlayerXpStorage {
         } else {
             Slayers.getPlugin().getLogger().severe("Slayer storage File not found");
         }
-    }
+    }*/
 }

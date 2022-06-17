@@ -1,8 +1,8 @@
 package me.sedri.slayers.Listeners;
 
 import me.sedri.slayers.Data.SlayerData;
+import me.sedri.slayers.Data.SlayerSQL;
 import me.sedri.slayers.Data.SlayerXp;
-import me.sedri.slayers.Data.SlayerXpStorage;
 import me.sedri.slayers.Slayers;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
@@ -37,9 +37,10 @@ public class PlayerInteractListener implements Listener {
             } else {
                 if (e.getEntity().getType().equals(slayer.getBoss())) {
                     String tier = slayer.getTier().split(":")[0];
-                    SlayerXp slayerplayer = SlayerXpStorage.createPlayer(p, tier);
+                    SlayerXp slayerplayer = SlayerSQL.getUser(p.getUniqueId(), tier);
+                    if (slayerplayer == null) return;
                     slayerplayer.addXp(slayer.getReward());
-                    SlayerXpStorage.updatePlayerSlayerXp(slayerplayer);
+                    SlayerSQL.saveSlayerXp(slayerplayer);
                     String bar = slayerplayer.getBar();
                     p.sendMessage("");
                     p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&2&lSLAYER DEFEATED!"));
