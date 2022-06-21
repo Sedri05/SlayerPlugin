@@ -52,6 +52,7 @@ zombie_slayer:
   #<mob>:<xp>
   #XP is how much xp you get when killing that mob and is related to required-xp
   #MM support will be added when we update to latest
+  #mm_ before a mob to make it a mythic mob
   mob-list:
     - "zombie:1"
     - "ZOMBIE_VILLAGER:2"

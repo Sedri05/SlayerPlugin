@@ -1,5 +1,8 @@
 package me.sedri.slayers;
 
+import io.lumine.mythic.api.mobs.MythicMob;
+import io.lumine.mythic.bukkit.BukkitAPIHelper;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import me.sedri.slayers.Commands.SlayerCommand;
 import me.sedri.slayers.Data.SlayerConfig;
 import me.sedri.slayers.Data.SlayerData;
@@ -176,13 +179,12 @@ public final class Slayers extends JavaPlugin {
             slayermenu.add(item);
             slayermenuindex.put(i, key);
             i++;
-            HashMap<EntityType, Integer> mobs = new HashMap<>();
+            HashMap<String, Integer> mobs = new HashMap<>();
             List<String> moblist = slayer.getStringList("mob-list");
             for (String mob: moblist) {
                 String[] mobs2 = mob.split(":");
                 try {
-                    EntityType mob2 = EntityType.valueOf(mobs2[0].toUpperCase());
-                    mobs.put(mob2, Integer.parseInt(mobs2[1]));
+                    mobs.put(mobs2[0], Integer.parseInt(mobs2[1]));
                 } catch (IllegalArgumentException e){
                     getLogger().warning("Invalid mob defined in " + key);
                 }
@@ -196,6 +198,7 @@ public final class Slayers extends JavaPlugin {
             for (String tierkey: tierkeys){
                 ConfigurationSection tier = tiers.getConfigurationSection(tierkey);
                 if (tier == null) continue;
+
                 mat = Material.ZOMBIE_HEAD;
                 mate = tier.getString("material");
                 if (mate != null) {
@@ -203,35 +206,49 @@ public final class Slayers extends JavaPlugin {
                 } else {
                     getLogger().warning("Invalid material set in " + tierkey + "in "+ key);
                 }
+
                 item = new ItemStack(mat);
                 meta = item.getItemMeta();
                 String name = tier.getString("name");
                 if (name == null) {
                     name = tierkey;
                 }
+
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
                 lorelist = tier.getStringList("description");
                 lore = new ArrayList<>();
                 for (String loreline : lorelist) {
                     lore.add(ChatColor.translateAlternateColorCodes('&', loreline));
                 }
+
                 String perm = tier.getString("required-perm");
                 Double money = tier.getDouble("required-coins");
                 meta.setLore(lore);
                 item.setItemMeta(meta);
-                EntityType type = null;
+                EntityType boss = null;
+                MythicMob mmboss = null;
                 String mob = tier.getString("boss");
                 if (mob != null) {
-                    type = EntityType.valueOf(mob.toUpperCase());
+                    if (mob.startsWith("mm_")){
+                        BukkitAPIHelper api = MythicBukkit.inst().getAPIHelper();
+                        mmboss = api.getMythicMob(mob.replace("mm_", ""));
+                    } else {
+                        boss = EntityType.valueOf(mob.toUpperCase());
+                    }
                 } else {
                     getLogger().warning("Invalid boss mob set in "+ tierkey + " in " + key);
                 }
+
                 Integer max_xp = tier.getInt("required-xp");
                 Integer reward_xp = tier.getInt("reward-xp");
                 String id = key + ":" + tierkey;
-                if (type != null) {
+                if (boss != null) {
                     slayersubmenu.put(id, item);
-                    SlayerData data = new SlayerData(mobs, type, max_xp, reward_xp, id, name, slayername, lore, perm, money);
+                    SlayerData data = new SlayerData(mobs, boss, max_xp, reward_xp, id, name, slayername, lore, perm, money);
+                    allSlayers.put(id, data);
+                } else if (mmboss != null){
+                    slayersubmenu.put(id, item);
+                    SlayerData data = new SlayerData(mobs, mmboss, max_xp, reward_xp, id, name, slayername, lore, perm, money);
                     allSlayers.put(id, data);
                 }
             }

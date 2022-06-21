@@ -1,5 +1,8 @@
 package me.sedri.slayers.Data;
 
+import io.lumine.mythic.api.mobs.MythicMob;
+import io.lumine.mythic.bukkit.BukkitAPIHelper;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import me.sedri.slayers.Slayers;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -12,10 +15,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class SlayerData {
-    private final HashMap<EntityType, Integer> mobs;
-    private final EntityType boss;
+    private final HashMap<String, Integer> mobs;
+    private final HashMap<EntityType, Integer> vanillaMobs = new HashMap<>();
+    private final HashMap<MythicMob, Integer> MMmobs = new HashMap<>();
+    private EntityType boss;
+    private boolean isMMBoss = false;
+    private MythicMob mythicboss;
     private boolean bossSpawned = false;
     private final int max_xp;
     private final int reward;
@@ -28,7 +36,8 @@ public class SlayerData {
     private double money = 0;
     private BossBar bossBar;
 
-    public SlayerData(HashMap<EntityType, Integer> mobs, EntityType boss, Integer max_xp, Integer reward, String tier, String name, String slayername, ArrayList<String> desc, String perm, Double money){
+    public SlayerData(HashMap<String, Integer> mobs, EntityType boss, Integer max_xp, Integer reward, String tier, String name, String slayername, ArrayList<String> desc, String perm, Double money){
+        defineMobtypes(mobs);
         this.mobs = mobs;
         this.boss = boss;
         this.max_xp = max_xp;
@@ -40,7 +49,22 @@ public class SlayerData {
         this.money = money;
         this.slayername = slayername;
     }
-    public SlayerData(HashMap<EntityType, Integer> mobs, EntityType boss, Integer max_xp, Integer reward, String tier, String name, String slayername, ArrayList<String> desc){
+
+    public SlayerData(HashMap<String, Integer> mobs, MythicMob mboss, Integer max_xp, Integer reward, String tier, String name, String slayername, ArrayList<String> desc, String perm, Double money){
+        this.mobs = mobs;
+        defineMobtypes(mobs);
+        this.mythicboss = mboss;
+        this.max_xp = max_xp;
+        this.reward = reward;
+        this.tier = tier;
+        this.name = name;
+        this.description = desc;
+        this.perm = perm;
+        this.money = money;
+        this.slayername = slayername;
+        this.isMMBoss = true;
+    }
+    /*public SlayerData(HashMap<EntityType, Integer> mobs, EntityType boss, Integer max_xp, Integer reward, String tier, String name, String slayername, ArrayList<String> desc){
         this.mobs = mobs;
         this.boss = boss;
         this.max_xp = max_xp;
@@ -71,9 +95,10 @@ public class SlayerData {
         this.description = desc;
         this.money = money;
         this.slayername = slayername;
-    }
+    }*/
 
     public SlayerData(SlayerData data, Player p){
+        defineMobtypes(data.getMobs());
         this.mobs = data.getMobs();
         this.boss = data.getBoss();
         this.max_xp = data.getMax_xp();
@@ -87,13 +112,15 @@ public class SlayerData {
         this.money = data.getMoney();
         this.bossBar = data.getBossBar();
         this.slayername = data.getSlayername();
+        this.isMMBoss = data.isMMBoss;
+        this.mythicboss = data.getMythicboss();
     }
 
     public String getTier() {
         return tier;
     }
 
-    public HashMap<EntityType, Integer> getMobs() {
+    public HashMap<String, Integer> getMobs() {
         return mobs;
     }
 
@@ -157,6 +184,10 @@ public class SlayerData {
         return money;
     }
 
+    public boolean isMMBoss() {
+        return isMMBoss;
+    }
+
     public boolean canStart(Player p){
         if (perm != null) {
             if (!p.hasPermission(perm)) return false;
@@ -182,6 +213,10 @@ public class SlayerData {
         bossBar.removeAll();
         bossBar = null;
     }
+
+    public MythicMob getMythicboss() {
+        return mythicboss;
+    }
     public void initBossBar(Player p){
         bossBar = Bukkit.createBossBar(ChatColor.translateAlternateColorCodes('&', name + ": &c" + xp + " &4/ " + max_xp), BarColor.YELLOW, BarStyle.SOLID);
         bossBar.addPlayer(p);
@@ -190,6 +225,32 @@ public class SlayerData {
     }
     public void updateBossBar(){
         bossBar.setTitle(ChatColor.translateAlternateColorCodes('&', name + ": &c" + xp + " &4/ " + max_xp));
+        if (xp*1D/max_xp > 1){
+            bossBar.setProgress(1);
+            return;
+        }
         bossBar.setProgress(xp*1D/max_xp);
+    }
+
+    public HashMap<EntityType, Integer> getVanillaMobs() {
+        return vanillaMobs;
+    }
+    public HashMap<MythicMob, Integer> getMMmobs() {
+        return MMmobs;
+    }
+
+    private void defineMobtypes(HashMap<String, Integer> mobs){
+        Set<String> keys = mobs.keySet();
+        BukkitAPIHelper api = MythicBukkit.inst().getAPIHelper();
+        for (String key: keys){
+            Integer xp = mobs.get(key);
+            if (key.startsWith("mm_")){
+                MythicMob mmboss = api.getMythicMob(key.replace("mm_", ""));
+                MMmobs.put(mmboss, xp);
+            } else {
+                EntityType mob = EntityType.valueOf(key.toUpperCase());
+                vanillaMobs.put(mob, xp);
+            }
+        }
     }
 }

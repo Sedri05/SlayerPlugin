@@ -4,6 +4,7 @@ import me.sedri.slayers.Data.SlayerData;
 import me.sedri.slayers.Data.SlayerLevel;
 import me.sedri.slayers.Data.SlayerSQL;
 import me.sedri.slayers.Data.SlayerXp;
+import me.sedri.slayers.Listeners.PlayerInteractListener;
 import me.sedri.slayers.Slayers;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -196,6 +197,7 @@ public class MainSlayerGui implements Listener {
                     } else {
                         plugin.activeSlayer.get(p).removeBossBar();
                         plugin.activeSlayer.remove(p);
+                        PlayerInteractListener.removeFromActiveMap(p);
                         p.sendMessage("");
                         p.sendMessage(ChatColor.RED + "Your previous Slayer has been canceled.");
                         p.sendMessage("");
