@@ -64,14 +64,23 @@ public class MainSlayerGui implements Listener {
             inv.setItem(inv.getSize()-5, createGuiItem(Material.BARRIER, "&cBack"));
             int i = 10;
             ArrayList<SlayerLevel> levels = plugin.Levels.get(menu);
+            SlayerXp slayer = SlayerSQL.getUser(p, menu);
+            if (slayer == null) return;
+            Integer level = (int) slayer.getLevel();
             for (SlayerLevel lvl: levels) {
                 ArrayList<String> rewards = lvl.getRewards();
-                String[] str = new String[rewards.size()]; // = String[rewards.size()];
+                String[] str = new String[rewards.size()+2]; // = String[rewards.size()];
                 int j = 0;
                 for (String rew : rewards) {
                     str[j] = rew;
                     j++;
                 }
+                String unl = "&cLocked";
+                str[j] = "";
+                if (i-9<=level) {
+                    unl = "&aUnlocked";
+                }
+                str[j+1] = unl;
                 inv.setItem(i, createGuiItem(Material.GOLD_INGOT, "&6Level " + (i - 9), str));
                 i++;
             }

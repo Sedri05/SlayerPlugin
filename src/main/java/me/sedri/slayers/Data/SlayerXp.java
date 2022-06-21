@@ -46,7 +46,7 @@ public class SlayerXp {
         this.level++;
         if (p != null) {
             p.sendMessage("");
-            p.sendMessage(ChatColor.DARK_GREEN + "You have reached level " + ChatColor.YELLOW + Math.round(this.level));
+            p.sendMessage(ChatColor.DARK_GREEN + "You have reached level " + ChatColor.YELLOW + Math.round(this.level) + " &2in " + slayer);
             p.sendMessage("");
             for (String perm: lvl.getPermissions()){
                 plugin.addPermission(uuid, perm);
@@ -82,7 +82,7 @@ public class SlayerXp {
         ArrayList<Integer> levellist = plugin.LevelList.get(slayer);
         if (levellist == null) return;
         while (level < levellist.size() && this.xp + xp >= levellist.get((int) level)) {
-            xp = xp - levellist.get((int) level);
+            xp = (int)this.xp + xp - levellist.get((int) level);
             this.xp = 0;
             incrementLevel();
         }
