@@ -69,17 +69,18 @@ public class MainSlayerGui implements Listener {
             Integer level = (int) slayer.getLevel();
             for (SlayerLevel lvl: levels) {
                 ArrayList<String> rewards = lvl.getRewards();
-                String[] str = new String[rewards.size()+2]; // = String[rewards.size()];
+                String[] str = new String[2]; // = String[rewards.size()];
                 int j = 0;
-                for (String rew : rewards) {
-                    str[j] = rew;
-                    j++;
-                }
                 String unl = "&cLocked";
-                str[j] = "";
                 if (i-9<=level) {
+                    str = new String[rewards.size()+2];
+                    for (String rew : rewards) {
+                        str[j] = rew;
+                        j++;
+                    }
                     unl = "&aUnlocked";
                 }
+                str[j] = "";
                 str[j+1] = unl;
                 inv.setItem(i, createGuiItem(Material.GOLD_INGOT, "&6Level " + (i - 9), str));
                 i++;
@@ -161,6 +162,7 @@ public class MainSlayerGui implements Listener {
         if(e.getRawSlot() >= inv.getSize() && e.getClick() != ClickType.DOUBLE_CLICK) return;
         e.setCancelled(true);
         final Player p = (Player) e.getWhoClicked();
+        if (reward && e.getRawSlot() != inv.getSize()-5) return;
         if (menu == null || menu.equals("main")){
             if (e.getRawSlot() == inv.getSize()-5) {
                 p.closeInventory();

@@ -154,7 +154,7 @@ public class SlayerData {
 
     public void addXp(int xp_to_add){
         xp = xp + xp_to_add;
-        updateBossBar();
+        updateBossBar(xp_to_add);
     }
 
     public BossBar getBossBar() {
@@ -189,7 +189,7 @@ public class SlayerData {
     }
 
     public boolean canStart(Player p){
-        if (perm != null) {
+        if (perm != null && !perm.equals("")) {
             if (!p.hasPermission(perm)) return false;
         }
         if (money > 0) {
@@ -223,8 +223,8 @@ public class SlayerData {
         bossBar.setProgress(0);
         bossBar.setVisible(true);
     }
-    public void updateBossBar(){
-        bossBar.setTitle(ChatColor.translateAlternateColorCodes('&', name + ": &c" + xp + " &4/ " + max_xp));
+    public void updateBossBar(int e){
+        bossBar.setTitle(ChatColor.translateAlternateColorCodes('&', name + ": &c" + xp/e + " &4/ " + (int)Math.ceil(max_xp*1D/e)));
         if (xp*1D/max_xp > 1){
             bossBar.setProgress(1);
             return;
